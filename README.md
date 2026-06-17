@@ -22,7 +22,7 @@
 
 ![ZN.pdf 译文预览](assets/screenshots/preview.png)
 
-<p align="center"><sub>译文 <code>ZN.pdf</code> 实例（一篇全景相机标定论文）：左—标题/摘要/可点击引用，中—公式 LaTeX 重排，右—中文三线表与图注翻译。</sub></p>
+<p align="center"><sub>译文 <code>ZN.pdf</code> 实例 ——《深度残差学习用于图像识别》（ResNet，<a href="https://arxiv.org/abs/1512.03385">arXiv:1512.03385</a>，走<b>路径 A 源码直译</b>）：左—双语标题/中文摘要/可点击引用，中—公式与网络结构图原样保留，右—数据表与图注。</sub></p>
 
 ---
 
