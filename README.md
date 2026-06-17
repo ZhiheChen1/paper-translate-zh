@@ -8,6 +8,10 @@
 把一篇英文（或其他外文）论文 PDF 丢给 Claude，说一句「翻译一下这篇论文」，它就会：
 **提取文字与图片 → 写成学术化中文的 `ZN.tex` → 用 XeLaTeX 编译成 `ZN.pdf`**。
 
+![ZN.pdf 译文预览](assets/screenshots/preview.png)
+
+<p align="center"><sub>译文 <code>ZN.pdf</code> 实例（一篇全景相机标定论文）：左—标题/摘要/可点击引用，中—公式 LaTeX 重排，右—中文三线表与图注翻译。</sub></p>
+
 ---
 
 ## 效果
