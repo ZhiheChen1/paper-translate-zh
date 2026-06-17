@@ -1,0 +1,95 @@
+% !TEX program = xelatex
+% 中文学术译文模板 —— 用 xelatex 编译（ctex 负责中文排版与字体回退）。
+% 正文单栏、便于阅读；公式用 LaTeX 重排；图片嵌入 figures/ 下提取的原图。
+\documentclass[11pt]{article}
+
+\usepackage[UTF8, scheme=plain]{ctex}        % 中文支持；scheme=plain 不改西文版式
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb, amsfonts}      % 数学公式
+\usepackage{graphicx}                         % 插图
+\usepackage{booktabs}                         % 三线表
+\usepackage{array, multirow, makecell}        % 复杂表格
+\usepackage{caption}
+\usepackage{float}                            % [H] 精确定位浮动体
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\definecolor{linkblue}{RGB}{40,80,150}    % 引用/交叉引用链接色
+\definecolor{urlblue}{RGB}{30,90,140}
+% hyperref 放在大多数宏包之后；colorlinks 让正文引用、交叉引用、目录可点击跳转
+\usepackage[colorlinks=true, breaklinks=true]{hyperref}
+\hypersetup{
+  citecolor=linkblue,   % 正文 [n] 引用标记
+  linkcolor=linkblue,   % 图/表/公式/章节交叉引用
+  urlcolor=urlblue,
+}
+\usepackage{cleveref}                     % \cref 生成"图~1""式~(3)"等带链接的引用
+% cleveref 默认英文名，改成中文图表名
+\crefname{figure}{图}{图}
+\crefname{table}{表}{表}
+\crefname{equation}{式}{式}
+\crefname{section}{第}{第}
+\creflabelformat{section}{#2#1#3 节}      % \cref{sec:x} -> "第 2 节"
+
+% 图表标题中文化：图 1 / 表 1
+\captionsetup{labelsep=quad}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\graphicspath{{figures/}{work/figures/}{./}}
+
+% 行距略松，学术阅读更舒适
+\linespread{1.25}
+
+\title{\bfseries 论文中文标题（括注原英文标题）}
+\author{原作者姓名（保留原文）}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent 摘要正文的中文译文……
+\end{abstract}
+
+\section{引言}
+正文译文。首次出现的术语括注英文，例如卷积神经网络（Convolutional Neural
+Network, CNN）。正文引用用 \verb|\cite|，会生成可点击跳转到参考文献的链接，
+如已有方法~\cite{ref1} 与~\cite{ref2}。如~\cref{fig:overview} 所示，
+本文方法的结果见~\cref{tab:results}。行内公式如 $E=mc^2$，独立公式见~\cref{eq:loss}：
+\begin{equation}
+  \mathcal{L} = -\sum_{i} y_i \log \hat{y}_i .
+  \label{eq:loss}
+\end{equation}
+
+% —— 嵌入提取出的原图，图注译为中文 ——
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{p03_fig1.png}
+  \caption{中文图注译文（必要时保留坐标轴等原文标签）。}
+  \label{fig:overview}
+\end{figure}
+
+% —— 表格重排为中文三线表 ——
+\begin{table}[H]
+  \centering
+  \caption{中文表注译文。}
+  \label{tab:results}
+  \begin{tabular}{lcc}
+    \toprule
+    方法 & 准确率 & 参数量 \\
+    \midrule
+    基线 & 0.91 & 5M \\
+    本文 & \textbf{0.95} & 4M \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% 参考文献保留原文，不翻译。用 thebibliography + \bibitem，配合正文 \cite，
+% hyperref 会自动把正文 [n] 变成可点击、跳转到对应条目的超链接。
+% \bibitem 的标签（ref1、ref2…）与正文 \cite 一一对应，照原文顺序逐条录入。
+\begin{thebibliography}{99}
+  \bibitem{ref1} Author A, Author B. Title of the first paper. \textit{Venue}, Year.
+  \bibitem{ref2} Author C, Author D. Title of the second paper. \textit{Venue}, Year.
+\end{thebibliography}
+
+\end{document}
