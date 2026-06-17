@@ -16,8 +16,9 @@
 > Claude Code, Codex, Copilot CLI, Gemini CLI, etc. Only the install path and trigger
 > mechanism differ per tool; the translation pipeline is identical.
 
-把一篇英文（或其他外文）论文 PDF 丢给你的智能体工具，说一句「翻译一下这篇论文」，它就会：
-**提取文字与图片 → 写成学术化中文的 `ZN.tex` → 用 XeLaTeX 编译成 `ZN.pdf`**。
+把一篇英文（或其他外文）论文丢给你的智能体工具，说一句「翻译一下这篇论文」，它就会：
+**取得源文（arXiv 源码或 PDF）→ 写成学术化中文的 `ZN.tex` → 用 XeLaTeX 编译成 `ZN.pdf`**。
+没有本地 LaTeX 环境也行——会生成 `ZN.tex` 并给出在线编译（Overleaf）步骤。
 
 ![ZN.pdf 译文预览](assets/screenshots/preview.png)
 
@@ -49,18 +50,22 @@
 
 ## 工作流
 
+先按**有无 LaTeX 源码**分两条路径，保真度差别很大：
+
 ```
-源 PDF ──①提取──▶ 工作目录(tmp)  ──②翻译──▶ ZN.tex ──③编译──▶ ZN.pdf
-         text + figures           学术化中文           XeLaTeX
+              ┌─ 路径 A（首选）arXiv/源码 ─▶ 注入中文 + 原地翻译正文 ─┐
+源文 ─判断──┤                                                       ├─▶ ZN.tex ─▶ 编译 ─▶ ZN.pdf
+              └─ 路径 B  仅 PDF ─▶ 提取文字+图 ─▶ 学术化中文重排 ────┘                （无本地 LaTeX → Overleaf）
 ```
 
-1. **提取**（建立在官方 [`pdf` skill](https://github.com/anthropics/skills) 之上）——
-   `scripts/extract_pdf.py` 与 `pdf` skill 同一套工具链（pdfplumber / pypdf / poppler），
-   将 PDF 抽成：全文文字 `full_text.txt`、每页整页渲染 `pages/page_NN.png`（用于读版式/公式/图注）、
-   自动裁出的图片 `figures/`、清单 `manifest.json`。扫描件需 OCR、加密 PDF、表单等情形，
-   先用 `pdf` skill 处理再回到这里翻译。
-2. **翻译** —— 以 `assets/ZN_template.tex` 为骨架，逐章写出学术化中文译文。
-3. **编译** —— `scripts/compile_zh.sh` 用 `latexmk -xelatex` 编译，失败时打印精简错误摘要。
+- **路径 A —— LaTeX 源码直译（首选）**：给出 arXiv 链接/编号时，
+  `scripts/fetch_arxiv_source.sh` 下载并解包 e-print，定位主 `.tex` 与图片；只重写**正文文字**，
+  公式、图、表、参考文献、交叉引用**原样保留**——保真度最高。仅注入 `xeCJK` + 中文字体即可中文化。
+- **路径 B —— 从 PDF 提取**（建立在官方 [`pdf` skill](https://github.com/anthropics/skills) 之上）：
+  无源码时，`scripts/extract_pdf.py`（与 `pdf` skill 同一套 pdfplumber / pypdf / poppler 工具链）
+  抽出全文文字、整页渲染图与裁出的图片；公式与表格重排为 LaTeX。
+- **编译**：`scripts/compile_zh.sh` 用 `latexmk -xelatex`。
+  **检测到本地无 LaTeX 时不报错**，而是保留 `ZN.tex` 并打印 Overleaf 在线编译步骤（编译器选 XeLaTeX）。
 
 ## 安装
 
@@ -88,25 +93,39 @@
 | PDF 处理基础（提取/OCR/表单等） | 官方 [`pdf` skill](https://github.com/anthropics/skills) | Claude Code 自带；其他工具按需安装 `pdf` skill |
 | PDF 文字/图片提取 | `python3` + `pdfplumber` `pypdf` `Pillow` | `pip install pdfplumber pypdf Pillow` |
 | 整页渲染 | poppler（`pdftoppm` `pdfinfo`） | `apt install poppler-utils` |
-| 中文 LaTeX 编译 | XeLaTeX + `ctex` + `latexmk` | `apt install texlive-xetex texlive-lang-chinese latexmk` |
+| arXiv 源码下载（路径 A） | `curl` + `tar`/`gzip` | 系统自带 |
+| 中文 LaTeX 编译（**可选**，无则用 Overleaf） | XeLaTeX + `ctex`/`xeCJK` + `latexmk` | `apt install texlive-xetex texlive-lang-chinese latexmk` |
 | 中文字体 | Noto Serif/Sans SC、SimSun 等任一 | `apt install fonts-noto-cjk` |
 
 `ctex` 会自动回退到系统可用的中文字体，无需手动指定。
 
 ## 手动使用脚本（不经智能体也能跑）
 
+**路径 A（arXiv 源码）：**
+```bash
+# ① 下载并解包 arXiv 源码，定位主 .tex 与图片
+bash scripts/fetch_arxiv_source.sh 1708.02002 path/to/work
+# ② 复制主文件为 ZN.tex，注入中文支持，再原地翻译正文（翻译需人或 LLM）
+#    在 \documentclass 后加： \usepackage{xeCJK}\setCJKmainfont{Noto Serif CJK SC}
+#    若有 <main>.bbl，复制为 ZN.bbl
+# ③ 编译
+bash scripts/compile_zh.sh path/to/work/source/ZN.tex
+```
+
+**路径 B（PDF）：**
 ```bash
 # ① 提取到工作目录
 python3 scripts/extract_pdf.py path/to/paper.pdf path/to/work
-
-# ② 以模板为基础写 work/ZN.tex（翻译这一步需要人或 LLM 完成）
+# ② 以模板为基础写 work/ZN.tex（翻译需人或 LLM）
 cp assets/ZN_template.tex path/to/work/ZN.tex
-
 # ③ 编译
 bash scripts/compile_zh.sh path/to/work/ZN.tex   # -> path/to/work/ZN.pdf
 ```
 
-`extract_pdf.py` 可选参数：`--dpi 200`（页面渲染分辨率）、`--min-fig-px 120`（自动裁图的最小尺寸，用于过滤 logo/公式碎块）。
+`extract_pdf.py` 可选参数：`--dpi 200`（页面渲染分辨率）、`--min-fig-px 120`（自动裁图最小尺寸，过滤 logo/公式碎块）。
+
+> **没有本地 LaTeX？** `compile_zh.sh` 会自动检测：未装 `xelatex` 时不编译，而是保留 `ZN.tex`
+> 并打印 Overleaf 上传 + 选 XeLaTeX 编译的步骤——所以**本地 LaTeX 环境是可选的**。
 
 ## 目录结构
 
@@ -116,8 +135,9 @@ paper-translate-zh/
 ├── assets/
 │   └── ZN_template.tex       # 中文学术译文模板（ctex + 引用超链接）
 ├── scripts/
-│   ├── extract_pdf.py        # 提取文字 + 整页渲染 + 自动裁图
-│   └── compile_zh.sh         # XeLaTeX 编译 + 报错摘要
+│   ├── fetch_arxiv_source.sh # 路径 A：下载/解包 arXiv 源码并定位主 .tex
+│   ├── extract_pdf.py        # 路径 B：提取文字 + 整页渲染 + 自动裁图
+│   └── compile_zh.sh         # XeLaTeX 编译 + 报错摘要（无 LaTeX 时给 Overleaf 指引）
 ├── README.md
 └── LICENSE
 ```
