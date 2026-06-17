@@ -2,10 +2,21 @@
 
 > 将外文学术论文 PDF 翻译为**学术化中文**，产出可直接阅读、带引用超链接的 `ZN.pdf`。
 >
-> A [Claude](https://claude.com/claude-code) **Skill** that translates a foreign-language academic
-> paper (PDF) into a polished, academically-styled Chinese PDF.
+> An **agent Skill** that translates a foreign-language academic paper (PDF) into a polished,
+> academically-styled Chinese PDF.
 
-把一篇英文（或其他外文）论文 PDF 丢给 Claude，说一句「翻译一下这篇论文」，它就会：
+> [!IMPORTANT]
+> **不只面向 Claude Code——适用于所有支持 Skill 规范的 CLI / 智能体工具。**
+> 本仓库是一个标准 `SKILL.md` + 脚本的纯文本 Skill，与具体厂商无关。已知可用于
+> [Claude Code](https://claude.com/claude-code)、[Codex](https://openai.com/codex/)、
+> GitHub Copilot CLI、[Gemini CLI](https://github.com/google-gemini/gemini-cli) 等。
+> 各工具只是**加载/触发方式与安装目录**不同（见下方[安装](#安装)），翻译能力本身一致。
+>
+> **Works with any CLI/agent tool that supports the Skills format** — not Claude-only.
+> Claude Code, Codex, Copilot CLI, Gemini CLI, etc. Only the install path and trigger
+> mechanism differ per tool; the translation pipeline is identical.
+
+把一篇英文（或其他外文）论文 PDF 丢给你的智能体工具，说一句「翻译一下这篇论文」，它就会：
 **提取文字与图片 → 写成学术化中文的 `ZN.tex` → 用 XeLaTeX 编译成 `ZN.pdf`**。
 
 ![ZN.pdf 译文预览](assets/screenshots/preview.png)
@@ -53,14 +64,20 @@
 
 ## 安装
 
-把整个目录放到 Claude Code 的 skills 目录下：
+本 Skill 与厂商无关——把整个目录克隆到你所用工具的 skills 目录即可。各工具的目录约定不同：
 
-```bash
-git clone https://github.com/ChenZhihe-nudt/paper-translate-zh.git \
-  ~/.claude/skills/paper-translate-zh
-```
+| 工具 | skills 目录 | 克隆命令 |
+| --- | --- | --- |
+| **Claude Code** | `~/.claude/skills/` | `git clone https://github.com/ChenZhihe-nudt/paper-translate-zh.git ~/.claude/skills/paper-translate-zh` |
+| **Codex** | `~/.codex/skills/`（或你的 superpowers skills 路径） | `git clone https://github.com/ChenZhihe-nudt/paper-translate-zh.git ~/.codex/skills/paper-translate-zh` |
+| **Gemini CLI** | 见 Gemini CLI 的 skill/extension 目录 | 克隆到对应目录 |
+| **GitHub Copilot CLI** | 见 Copilot CLI 的 skill 目录 | 克隆到对应目录 |
+| **其他** | 该工具的 skills 加载目录 | 克隆到对应目录 |
 
-之后在 Claude Code 里直接说「**把这篇论文翻成中文**」并给出 PDF 路径即可触发。
+> 不确定路径时，查阅对应工具关于 “skills” 的文档；只要工具能从该目录发现 `SKILL.md`，本 Skill 即可用。
+
+安装后，在工具里直接说「**把这篇论文翻成中文**」并给出 PDF 路径即可触发（具体触发由各工具按
+`SKILL.md` 的 `description` 自动判定）。
 
 ## 依赖
 

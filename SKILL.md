@@ -27,6 +27,11 @@ description: >-
 
 逐段翻译再编译，不要想着一步到位。先把素材抽出来看清楚原文结构，再动笔。
 
+> **跨工具说明**：本 skill 适用于任何支持 Skill 规范的 CLI / 智能体工具（Claude Code、Codex、
+> Copilot CLI、Gemini CLI 等）。下文命令里写的 `~/.claude/skills/paper-translate-zh/` 是
+> Claude Code 的默认安装路径；在其他工具下，请把它替换为本 skill 的**实际安装目录**
+> （即包含本 `SKILL.md` 的目录）。
+
 ## ① 提取：文字 + 图片到工作目录
 
 > **依赖 `pdf` skill**：本步骤的 PDF 处理建立在官方 `pdf` skill 之上。下面的
