@@ -68,8 +68,8 @@
 
 | 工具 | skills 目录 | 克隆命令 |
 | --- | --- | --- |
-| **Claude Code** | `~/.claude/skills/` | `git clone https://github.com/ChenZhihe-nudt/paper-translate-zh.git ~/.claude/skills/paper-translate-zh` |
-| **Codex** | `~/.codex/skills/`（或你的 superpowers skills 路径） | `git clone https://github.com/ChenZhihe-nudt/paper-translate-zh.git ~/.codex/skills/paper-translate-zh` |
+| **Claude Code** | `~/.claude/skills/` | `git clone https://github.com/ZhiheChen1/paper-translate-zh.git ~/.claude/skills/paper-translate-zh` |
+| **Codex** | `~/.codex/skills/`（或你的 superpowers skills 路径） | `git clone https://github.com/ZhiheChen1/paper-translate-zh.git ~/.codex/skills/paper-translate-zh` |
 | **Gemini CLI** | 见 Gemini CLI 的 skill/extension 目录 | 克隆到对应目录 |
 | **GitHub Copilot CLI** | 见 Copilot CLI 的 skill 目录 | 克隆到对应目录 |
 | **其他** | 该工具的 skills 加载目录 | 克隆到对应目录 |
@@ -85,7 +85,7 @@
 
 | 用途 | 依赖 | 安装（Debian/Ubuntu 示例） |
 | --- | --- | --- |
-| PDF 处理基础（提取/OCR/表单等） | 官方 [`pdf` skill](https://github.com/anthropics/skills) | 随 Claude Code 一并安装 |
+| PDF 处理基础（提取/OCR/表单等） | 官方 [`pdf` skill](https://github.com/anthropics/skills) | Claude Code 自带；其他工具按需安装 `pdf` skill |
 | PDF 文字/图片提取 | `python3` + `pdfplumber` `pypdf` `Pillow` | `pip install pdfplumber pypdf Pillow` |
 | 整页渲染 | poppler（`pdftoppm` `pdfinfo`） | `apt install poppler-utils` |
 | 中文 LaTeX 编译 | XeLaTeX + `ctex` + `latexmk` | `apt install texlive-xetex texlive-lang-chinese latexmk` |
@@ -93,7 +93,7 @@
 
 `ctex` 会自动回退到系统可用的中文字体，无需手动指定。
 
-## 手动使用脚本（不经 Claude 也能跑）
+## 手动使用脚本（不经智能体也能跑）
 
 ```bash
 # ① 提取到工作目录
@@ -112,7 +112,7 @@ bash scripts/compile_zh.sh path/to/work/ZN.tex   # -> path/to/work/ZN.pdf
 
 ```
 paper-translate-zh/
-├── SKILL.md                  # Claude 读取的工作流与翻译规则
+├── SKILL.md                  # 智能体读取的工作流与翻译规则
 ├── assets/
 │   └── ZN_template.tex       # 中文学术译文模板（ctex + 引用超链接）
 ├── scripts/
